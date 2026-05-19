@@ -4,7 +4,7 @@ using NSubstitute;
 
 namespace LasseVK.Bootstrapping.Tests;
 
-public class HostBuilderExtensionTests
+public class HostBuilderExtensionsTests
 {
     [Test]
     public void Bootstrap_CalledOnce_CallsBootstrapper()

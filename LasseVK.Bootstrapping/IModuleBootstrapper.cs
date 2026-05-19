@@ -4,7 +4,7 @@ namespace LasseVK.Bootstrapping;
 
 /// <summary>
 /// This interface must be implemented by a class in a module (class library) and is responsible for registering
-/// services and configuring the host.
+/// services and preparing the host.
 /// </summary>
 public interface IModuleBootstrapper
 {
