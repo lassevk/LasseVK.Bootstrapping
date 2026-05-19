@@ -28,4 +28,11 @@ public class HostExtensionsTests
 
         await initializer.Received(1).InitializeAsync();
     }
+
+    [Test]
+    public void InitializeAsync_NullHost_ThrowsArgumentNullException()
+    {
+        IHost? host = null;
+        Assert.Throws<ArgumentNullException>(() => host!.InitializeAsync().GetAwaiter().GetResult());
+    }
 }
