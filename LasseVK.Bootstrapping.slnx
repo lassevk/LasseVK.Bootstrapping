@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LasseVK.Bootstrapping.Tests/LasseVK.Bootstrapping.Tests.csproj" />
+  <Project Path="LasseVK.Bootstrapping/LasseVK.Bootstrapping.csproj" />
+</Solution>
