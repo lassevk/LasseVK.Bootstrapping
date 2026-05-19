@@ -28,4 +28,21 @@ public class HostBuilderExtensionTests
 
         bootstrapper.Received(1).Bootstrap(builder);
     }
+
+    [Test]
+    public void Bootstrap_NullBuilder_ThrowsArgumentNullException()
+    {
+        IHostApplicationBuilder? builder = null;
+        IModuleBootstrapper bootstrapper = Substitute.For<IModuleBootstrapper>();
+
+        Assert.Throws<ArgumentNullException>(() => builder!.Bootstrap(bootstrapper));
+    }
+
+    [Test]
+    public void Bootstrap_NullBootstrapper_ThrowsArgumentNullException()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+
+        Assert.Throws<ArgumentNullException>(() => builder.Bootstrap(null!));
+    }
 }

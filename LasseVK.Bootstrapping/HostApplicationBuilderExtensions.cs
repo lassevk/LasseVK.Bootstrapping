@@ -35,6 +35,9 @@ public static class HostApplicationBuilderExtensions
         /// </returns>
         public T Bootstrap(IModuleBootstrapper bootstrapper)
         {
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(bootstrapper);
+
             HashSet<Type> registry = builder.GetOrCreateRegistry();
             if (registry.Add(bootstrapper.GetType()))
             {
