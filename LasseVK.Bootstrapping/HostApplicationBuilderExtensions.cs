@@ -33,6 +33,9 @@ public static class HostApplicationBuilderExtensions
         /// <returns>
         /// The <paramref name="builder"/> of the extension method.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="builder"/> or <paramref name="bootstrapper"/> is <see langword="null"/>.
+        /// </exception>
         public T Bootstrap(IModuleBootstrapper bootstrapper)
         {
             ArgumentNullException.ThrowIfNull(builder);
