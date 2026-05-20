@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/@docs/">
+    <File Path="LICENSE.md" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="LasseVK.Bootstrapping.Tests/LasseVK.Bootstrapping.Tests.csproj" />
   <Project Path="LasseVK.Bootstrapping/LasseVK.Bootstrapping.csproj" />
 </Solution>
