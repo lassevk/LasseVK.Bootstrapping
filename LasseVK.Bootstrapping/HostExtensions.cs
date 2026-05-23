@@ -9,42 +9,36 @@ namespace LasseVK.Bootstrapping;
 public static class HostExtensions
 {
     /// <summary>
-    /// Extension methods for <see cref="IHost"/>.
+    /// Initializes the host by invoking all implementations of <see cref="IModuleInitializer"/>.
     /// </summary>
-    /// <param name="host">
-    /// The <see cref="IHost"/> to invoke extension methods on.
-    /// </param>
     /// <typeparam name="T">
     /// The type of the host, implementing <see cref="IHost"/>.
     /// </typeparam>
-    extension<T>(T host)
-        where T : IHost
+    /// <param name="host">
+    /// The <see cref="IHost"/> to invoke extension methods on.
+    /// </param>
+    /// <returns>
+    /// The <paramref name="host"/> of the extension method.
+    /// </returns>
+    /// <remarks>
+    /// The initializers are invoked sequentially, but order is not guaranteed, so no
+    /// dependencies between initializers are guaranteed.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="host"/> is <see langword="null"/>.
+    /// </exception>
+    public static async Task<T> InitializeAsync<T>(this T host)
+        where T: IHost
     {
-        /// <summary>
-        /// Initializes the host by invoking all implementations of <see cref="IModuleInitializer"/>.
-        /// </summary>
-        /// <returns>
-        /// The <paramref name="host"/> of the extension method.
-        /// </returns>
-        /// <remarks>
-        /// The initializers are invoked sequentially, but order is not guaranteed, so no
-        /// dependencies between initializers are guaranteed.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="host"/> is <see langword="null"/>.
-        /// </exception>
-        public async Task<T> InitializeAsync()
+        ArgumentNullException.ThrowIfNull(host);
+
+        var initializers = host.Services.GetServices<IModuleInitializer>().ToList();
+
+        foreach (IModuleInitializer initializer in initializers)
         {
-            ArgumentNullException.ThrowIfNull(host);
-
-            var initializers = host.Services.GetServices<IModuleInitializer>().ToList();
-
-            foreach (IModuleInitializer initializer in initializers)
-            {
-                await initializer.InitializeAsync();
-            }
-
-            return host;
+            await initializer.InitializeAsync();
         }
+
+        return host;
     }
 }
