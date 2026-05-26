@@ -36,7 +36,7 @@ public static class HostExtensions
 
         foreach (IModuleInitializer initializer in initializers)
         {
-            await initializer.InitializeAsync();
+            await initializer.InitializeAsync(host);
         }
 
         return host;

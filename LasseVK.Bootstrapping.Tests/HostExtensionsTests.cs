@@ -26,7 +26,7 @@ public class HostExtensionsTests
         IHost host = builder.Build();
         await host.InitializeAsync();
 
-        await initializer.Received(1).InitializeAsync();
+        await initializer.Received(1).InitializeAsync(host);
     }
 
     [Test]

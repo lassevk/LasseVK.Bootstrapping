@@ -14,5 +14,6 @@ public interface IModuleInitializer
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    Task InitializeAsync();
+    Task InitializeAsync<T>(T host)
+        where T: IHost;
 }
