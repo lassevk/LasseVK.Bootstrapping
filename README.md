@@ -48,4 +48,85 @@ that version, but I won't guarantee that updates to that version will be made.
 
 # Usage
 
-TODO
+After installing the package in your projects, you can create a `ModuleBootstrapper` class in each class library, and invoke those during program setup
+to allow them to register services, without having to expose internal implementations from the libraries.
+
+This means you can move services and configuration registration out of `Program.cs` and into the libraries where
+the functionality and services reside.
+
+Here's an example, in a separate class library you can declare the following two types:
+
+```csharp
+public interface ISomeService
+{
+    string GetSomeValue();
+}
+
+internal class SomeService : ISomeService
+{
+    public string GetSomeValue()
+    {
+        return "Some value";
+    }
+}
+```
+
+then you also declare a `ModuleBootstrapper` class in the same project:
+
+```csharp
+public class ModuleBootstrapper : IModuleBootstrapper
+{
+    public static void Bootstrap(IHostApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<ISomeService, SomeService>();
+    }
+}
+```
+
+I also tend to add an `ApplicationBootstrapper` class in my main program project that registers
+everything that is specific to the program:
+
+```csharp
+public class ApplicationBootstrapper : IModuleBootstrapper
+{
+    public static void Bootstrap(IHostApplicationBuilder builder)
+    {
+        builder.Bootstrap(new TheClassLibrary.ModuleBootstrapper());
+        
+        // specific registrations of services found in the main program project
+    }
+}
+```
+
+Then, in program.cs, you can have the following code:
+
+```csharp
+using LasseVK.Bootstrapping;
+using Microsoft.Extensions.Hosting;
+
+var builder = Host.CreateApplicationBuilder(args);
+builder.Bootstrap(new ApplicationBootstrapper()); // this in turn calls the class library
+
+var host = builder.Build();
+await host.InitializeAsync();
+await host.RunAsync();
+```
+
+For my own projects, this might be the entire Program.cs content, with all service
+registrations moved to the `ApplicationBootstrapper` class, or into separate project
+`ModuleBootstrapper` classes.
+
+If anything is required to run against the `host` instance after building the host, but before
+running the application, I try to move this into classes implementing the
+`IModuleInitializer` interface. Again, I try to separate concerns into separate
+class libraries with vertical slices of functionality.
+
+Since calling `builder.Bootstrap(new SomeModuleBootstrapper())` will only invoke the
+`Bootstrap` method on that type once per type (ie. once for `SomeModuleBootstrapper`),
+any class library projects that also rely on other class libraries being registered
+will all call the `Bootstrap` method with the respective module bootstrappers
+from those dependency class libraries. This ensures all services are registered, even
+if the main program project itself only require a few of them.
+
+At most, you will construct additional instances of the bootstrapper classes on program
+execution, but each `Bootstrap` method will only be invoked once.
