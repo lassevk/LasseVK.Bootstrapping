@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-
-namespace LasseVK.Bootstrapping;
+﻿namespace LasseVK.Bootstrapping;
 
 /// <summary>
 /// This interface must be implemented by a class in a module (class library) and is responsible for initializing
