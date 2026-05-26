@@ -11,9 +11,11 @@ public interface IModuleInitializer
     /// <summary>
     /// This method is called by the <see cref="HostExtensions.InitializeAsync"/> method.
     /// </summary>
+    /// <param name="host">
+    /// The host to initialize.
+    /// </param>
     /// <returns>
     /// A <see cref="Task"/> that represents the asynchronous operation.
     /// </returns>
-    Task InitializeAsync<T>(T host)
-        where T: IHost;
+    Task InitializeAsync(object host);
 }
