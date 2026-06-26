@@ -13,7 +13,6 @@
         <RepositoryUrl>https://github.com/lassevk/LasseVK.Bootstrapping.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
-        <SignAssembly>True</SignAssembly>
         <Authors>Lasse Vågsæther Karlsen</Authors>
         <Product>LasseVK.Bootstrapping</Product>
         <PackageReadmeFile>README.md</PackageReadmeFile>
