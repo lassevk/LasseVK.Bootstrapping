@@ -41,7 +41,7 @@ public static class HostExtensions
         var moduleInitializers = host.Services.GetServices<IModuleInitializer>().ToList();
         foreach (IModuleInitializer initializer in moduleInitializers)
         {
-            await initializer.InitializeAsync(host);
+            await initializer.InitializeAsync();
         }
 
         return host;
