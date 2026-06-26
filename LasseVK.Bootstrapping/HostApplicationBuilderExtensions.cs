@@ -41,7 +41,7 @@ public static class HostApplicationBuilderExtensions
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(bootstrapper);
 
-            HashSet<Type> registry = builder.GetOrCreateRegistry();
+            HashSet<Type> registry = GetOrCreateRegistry(builder.Properties);
             if (registry.Add(bootstrapper.GetType()))
             {
                 bootstrapper.Bootstrap(builder);
@@ -70,7 +70,7 @@ public static class HostApplicationBuilderExtensions
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(bootstrapper);
 
-            HashSet<Type> registry = builder.GetOrCreateRegistry();
+            HashSet<Type> registry = GetOrCreateRegistry(builder.Properties);
             if (registry.Add(bootstrapper.GetType()))
             {
                 bootstrapper.Bootstrap(builder);
@@ -80,15 +80,15 @@ public static class HostApplicationBuilderExtensions
         }
     }
 
-    private static HashSet<Type> GetOrCreateRegistry(this IHostApplicationBuilder builder)
+    private static HashSet<Type> GetOrCreateRegistry(IDictionary<object, object> builderProperties)
     {
-        if (builder.Properties.TryGetValue(_registryKey, out object? registryObject))
+        if (builderProperties.TryGetValue(_registryKey, out object? registryObject))
         {
             return (HashSet<Type>)registryObject;
         }
 
         var registry = new HashSet<Type>();
-        builder.Properties.Add(_registryKey, registry);
+        builderProperties.Add(_registryKey, registry);
         return registry;
     }
 }
