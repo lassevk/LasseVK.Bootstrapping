@@ -46,6 +46,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Update="Microsoft.Maui.Controls" Version="10.0.80" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
