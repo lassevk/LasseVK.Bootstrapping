@@ -9,7 +9,7 @@ namespace LasseVK.Bootstrapping;
 public interface IModuleBootstrapper
 {
     /// <summary>
-    /// This method is called by the <see cref="HostApplicationBuilderExtensions.Bootstrap"/> method,
+    /// This method is called by the <see cref="HostApplicationBuilderExtensions.Bootstrap{T}(T,IModuleBootstrapper)"/> method,
     /// once, for *type* of class implementing this interface.
     /// </summary>
     /// <param name="builder">

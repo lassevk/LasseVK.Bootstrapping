@@ -17,10 +17,23 @@ public class HostExtensionsTests
     }
 
     [Test]
-    public async Task InitializeAsync_OneInitializer_IsCalledOnce()
+    public async Task InitializeAsync_OneModuleInitializer_IsCalledOnce()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         IModuleInitializer initializer = Substitute.For<IModuleInitializer>();
+        builder.Services.AddSingleton(initializer);
+
+        IHost host = builder.Build();
+        await host.InitializeAsync();
+
+        await initializer.Received(1).InitializeAsync(host);
+    }
+
+    [Test]
+    public async Task InitializeAsync_OneApplicationInitializer_IsCalledOnce()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        IHostInitializer<IHost> initializer = Substitute.For<IHostInitializer<IHost>>();
         builder.Services.AddSingleton(initializer);
 
         IHost host = builder.Build();

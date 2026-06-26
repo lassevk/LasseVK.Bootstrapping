@@ -28,13 +28,18 @@ public static class HostExtensions
     /// <paramref name="host"/> is <see langword="null"/>.
     /// </exception>
     public static async Task<T> InitializeAsync<T>(this T host)
-        where T: IHost
+        where T : IHost
     {
         ArgumentNullException.ThrowIfNull(host);
 
-        var initializers = host.Services.GetServices<IModuleInitializer>().ToList();
+        var hostInitializers = host.Services.GetServices<IHostInitializer<T>>().ToList();
+        foreach (IHostInitializer<T> initializer in hostInitializers)
+        {
+            await initializer.InitializeAsync(host);
+        }
 
-        foreach (IModuleInitializer initializer in initializers)
+        var moduleInitializers = host.Services.GetServices<IModuleInitializer>().ToList();
+        foreach (IModuleInitializer initializer in moduleInitializers)
         {
             await initializer.InitializeAsync(host);
         }
