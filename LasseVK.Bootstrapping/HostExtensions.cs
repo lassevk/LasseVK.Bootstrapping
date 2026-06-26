@@ -34,16 +34,16 @@ public static class HostExtensions
         {
             ArgumentNullException.ThrowIfNull(host);
 
-            var hostInitializers = host.Services.GetServices<IHostInitializer<T>>().ToList();
-            foreach (IHostInitializer<T> initializer in hostInitializers)
-            {
-                await initializer.InitializeAsync(host);
-            }
-
             var moduleInitializers = host.Services.GetServices<IModuleInitializer>().ToList();
             foreach (IModuleInitializer initializer in moduleInitializers)
             {
                 await initializer.InitializeAsync();
+            }
+
+            var hostInitializers = host.Services.GetServices<IHostInitializer<T>>().ToList();
+            foreach (IHostInitializer<T> initializer in hostInitializers)
+            {
+                await initializer.InitializeAsync(host);
             }
 
             return host;
