@@ -76,7 +76,7 @@ then you also declare a `ModuleBootstrapper` class in the same project:
 ```csharp
 public class ModuleBootstrapper : IModuleBootstrapper
 {
-    public static void Bootstrap(IHostApplicationBuilder builder)
+    public void Bootstrap(IHostApplicationBuilder builder)
     {
         builder.Services.AddSingleton<ISomeService, SomeService>();
     }
@@ -89,7 +89,7 @@ everything that is specific to the program:
 ```csharp
 public class ApplicationBootstrapper : IModuleBootstrapper
 {
-    public static void Bootstrap(IHostApplicationBuilder builder)
+    public void Bootstrap(IHostApplicationBuilder builder)
     {
         builder.Bootstrap(new TheClassLibrary.ModuleBootstrapper());
         
@@ -130,3 +130,9 @@ if the main program project itself only require a few of them.
 
 At most, you will construct additional instances of the bootstrapper classes on program
 execution, but each `Bootstrap` method will only be invoked once.
+
+# Maui applications
+
+Maui applications do not follow the normal convention of implementing the
+main host as a `IHost` derived type. There is a separate
+nuget package for this: [LasseVK.Bootstrapping.Maui](https://www.nuget.org/packages/LasseVK.Bootstrapping.Maui/).
