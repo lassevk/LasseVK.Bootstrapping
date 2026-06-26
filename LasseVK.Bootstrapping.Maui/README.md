@@ -1,4 +1,4 @@
-# LasseVK.Bootstrapping
+# LasseVK.Bootstrapping.Maui
 
 [![build](https://github.com/lassevk/LasseVK.Bootstrapping/actions/workflows/build.yml/badge.svg)](https://github.com/lassevk/LasseVK.Bootstrapping/actions/workflows/build.yml)
 [![codeql](https://github.com/lassevk/LasseVK.Bootstrapping/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lassevk/LasseVK.Bootstrapping/actions/workflows/github-code-scanning/codeql)
@@ -6,7 +6,7 @@
 This package is used in conjunction with the [LasseVK.Bootstrapping](https://www.nuget.org/packages/LasseVK.Bootstrapping)
 package to handle initialization of Maui applications.
 
-Maui applications do not follow the regular convention of implementing its host as an `IHost` implementation. Additionally,
+Maui applications do not follow the regular convention of implementing its application as an `IHost` implementation. Additionally,
 the startup code of a Maui application is synchronous in nature, so asynchronous initialization is not possible.
 
 ## Discord
@@ -46,12 +46,12 @@ that version, but I won't guarantee that updates to that version will be made.
 
 See the main nuget package for usage instructions on how to set up bootstrappers and handle service registration.
 
-When defining the initializer types for Maui applications, implement the `IMauiInitializer` interface:
+When defining the initializer types for Maui applications, implement the `IMauiAppInitializer` interface:
 
 ```csharp
-public interface IMauiInitializer
+public interface IMauiAppInitializer
 {
-    void Initialize(MauiAppBuilder builder);
+    void Initialize(MauiApp app);
 }
 ```
 
@@ -61,21 +61,21 @@ system and initialize support, might look like this:
 ```csharp
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		MauiAppBuilder builder = MauiApp.CreateBuilder();
+    public static MauiApp CreateMauiApp()
+    {
+        MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder.Bootstrap(new ApplicationBootstrapper());
-
-		MauiApp app = builder.Build();
+        
+        MauiApp app = builder.Build();
         app.Initialize();
-
-		return app;
-	}
+        
+        return app;
+    }
 }
 ```
 
 The `ApplicationBootstrapper` class is a class that implements the `IApplicationBootstrapper<MauiAppBuilder>` or
-the `IModuleBootstrapper` interface, and registers service, among other things implementations of `IMauiInitializer`.
+the `IModuleBootstrapper` interface, and registers services, among other things implementations of `IMauiAppInitializer`.
 
 Here are examples of these classes:
 
@@ -112,7 +112,7 @@ internal sealed class DatabaseMigrationInitializer : IMauiAppInitializer
         _contextFactory = contextFactory;
     }
 
-    public void Initialize(MauiApp host)
+    public void Initialize(MauiApp app)
     {
         using AppDbContext context = _contextFactory.CreateDbContext();
         context.Database.Migrate();
@@ -121,7 +121,23 @@ internal sealed class DatabaseMigrationInitializer : IMauiAppInitializer
 ```
 
 During startup, the program will first call the `Bootstrap` method of the `ApplicationBootstrapper` class, which will
-register the services that are needed for the application to run, including the `IMauiInitializer` implementation.
+register the services that are needed for the application to run, including the `IMauiAppInitializer` implementation.
 
 In this case the initializer will run migrations as part of the application startup, before the main application code
 is executed.
+
+# Asynchronous initialization
+
+The main nuget package allows for asynchronous initialization of modules and applications,
+but unfortunately the startup code in a Maui application is synchronous, so these are not
+supported.
+
+Any attempt at invoking the asynchronous initialization methods using code like this:
+
+```csharp
+initializer.InitializeAsync(app).GetAwaiter().GetResult();
+```
+
+will deadlock the main thread, and the application will never start. As such, registering any
+asynchronous initializers in a Maui application is not supported. Since this cannot be
+detected at compile time, it will throw an `InvalidOperationException` at runtime.
