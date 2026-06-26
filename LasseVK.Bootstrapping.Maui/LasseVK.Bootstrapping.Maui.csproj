@@ -6,6 +6,21 @@
         <Nullable>enable</Nullable>
         <UseMaui>true</UseMaui>
         <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
+
+        <Description>A service registration system for separation of concerns, tailored to Maui applications.</Description>
+        <Copyright>Copyright (C) Lasse V. Karlsen 2015-$([System.DateTime]::Today.ToString('yyyy')), All rights reserved</Copyright>
+        <PackageProjectUrl>https://github.com/lassevk/LasseVK.Bootstrapping</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/lassevk/LasseVK.Bootstrapping.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
+        <SignAssembly>True</SignAssembly>
+        <Authors>Lasse Vågsæther Karlsen</Authors>
+        <Product>LasseVK.Bootstrapping.Maui</Product>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -22,4 +37,20 @@
       <ProjectReference Include="..\LasseVK.Bootstrapping\LasseVK.Bootstrapping.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MinVer" Version="7.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="..\README.md" Pack="true" PackagePath="$(PackageReadmeFile)"/>
+        <None Include="..\LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+    </ItemGroup>
+    
 </Project>
