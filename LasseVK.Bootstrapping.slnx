@@ -4,6 +4,7 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="LasseVK.Bootstrapping.Maui/LasseVK.Bootstrapping.Maui.csproj" />
+  <Project Path="LasseVK.Bootstrapping.Maui.Tests/LasseVK.Bootstrapping.Maui.Tests.csproj" />
   <Project Path="LasseVK.Bootstrapping.Tests/LasseVK.Bootstrapping.Tests.csproj" />
   <Project Path="LasseVK.Bootstrapping/LasseVK.Bootstrapping.csproj" />
 </Solution>
