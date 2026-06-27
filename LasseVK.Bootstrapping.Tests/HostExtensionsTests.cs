@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using NSubstitute;
@@ -7,7 +7,7 @@ namespace LasseVK.Bootstrapping.Tests;
 
 public class HostExtensionsTests
 {
-    [Test]
+    [Fact]
     public async Task InitializeAsync_NoInitializers_ReturnsSafely()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
@@ -16,7 +16,7 @@ public class HostExtensionsTests
         await host.InitializeAsync();
     }
 
-    [Test]
+    [Fact]
     public async Task InitializeAsync_OneModuleInitializer_IsCalledOnce()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
@@ -29,7 +29,7 @@ public class HostExtensionsTests
         await initializer.Received(1).InitializeAsync();
     }
 
-    [Test]
+    [Fact]
     public async Task InitializeAsync_OneApplicationInitializer_IsCalledOnce()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
@@ -42,10 +42,65 @@ public class HostExtensionsTests
         await initializer.Received(1).InitializeAsync(host);
     }
 
-    [Test]
-    public void InitializeAsync_NullHost_ThrowsArgumentNullException()
+    [Fact]
+    public async Task InitializeAsync_InvokesModuleInitializersBeforeHostInitializers()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        var log = new List<string>();
+
+        // Register the host initializer first to prove the order is driven by the
+        // implementation, not by registration order.
+        builder.Services.AddSingleton<IHostInitializer<IHost>>(new RecordingHostInitializer(log));
+        builder.Services.AddSingleton<IModuleInitializer>(new RecordingModuleInitializer(log));
+
+        IHost host = builder.Build();
+        await host.InitializeAsync();
+
+        Assert.Equal(new[] { "module", "host" }, log);
+    }
+
+    [Fact]
+    public async Task InitializeAsync_ReturnsSameHost()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        IHost host = builder.Build();
+
+        IHost result = await host.InitializeAsync();
+
+        Assert.Same(host, result);
+    }
+
+    [Fact]
+    public async Task InitializeAsync_NullHost_ThrowsArgumentNullException()
     {
         IHost? host = null;
-        Assert.Throws<ArgumentNullException>(() => host!.InitializeAsync().GetAwaiter().GetResult());
+
+        await Assert.ThrowsAsync<ArgumentNullException>(() => host!.InitializeAsync());
+    }
+
+    private sealed class RecordingModuleInitializer : IModuleInitializer
+    {
+        private readonly List<string> _log;
+
+        public RecordingModuleInitializer(List<string> log) => _log = log;
+
+        public Task InitializeAsync()
+        {
+            _log.Add("module");
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class RecordingHostInitializer : IHostInitializer<IHost>
+    {
+        private readonly List<string> _log;
+
+        public RecordingHostInitializer(List<string> log) => _log = log;
+
+        public Task InitializeAsync(IHost host)
+        {
+            _log.Add("host");
+            return Task.CompletedTask;
+        }
     }
 }
